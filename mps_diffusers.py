@@ -28,6 +28,7 @@ from diffusers.schedulers import (
 	ScoreSdeVpScheduler,
 )
 from configparser import ConfigParser
+import os
 import argparse
 import json
 import random
@@ -46,8 +47,9 @@ parser.add_argument('-n', metavar='"goofy hands"', type=str, help="negative prom
 parser.add_argument('-c', type=int, help="number of images to produce (if omitted, will generate until you terminate with ^C)")
 args = parser.parse_args()
 
+localdir = os.path.dirname(__file__)
 conf = ConfigParser()
-conf.read('profiles.ini')
+conf.read(os.path.join(localdir, 'profiles.ini'))
 
 if args.profile and args.profile in conf.sections():
 	choice = args.profile
@@ -185,28 +187,30 @@ while((not args.c) or (image_n < args.c)):
 	md.add_text("Seed", str(seed))
 	md.add_text("Agent", f"diffusers_test.py")
 	md.add_text("agent", f"diffusers_test.py")
-	md.add_text('sd-metadata',
-		'{"model": "stable diffusion", "model_weights": "'
-		+ st['model'] +
-		'", "model_hash": "", "app_id": "'
-		+ "diffusers_test.py" +
-		'", "app_version": "'
-		+ "0" +
-		'", "image": {"prompt": [{"prompt": "'
-		+ f"{invoke_prompt} [{invoke_neg}]" +
-		'", "weight": 1.0}], "steps": '
-		+ str(st['steps']) +
-		', "cfg_scale": '
-		+ str(st['cfg_scale']) +
-		', "threshold": 0.0, "hires_fix": false, "seamless": false, "perlin": 0.0, "width": '
-		+ str(st['width']) +
-		', "height": '
-		+ str(st['height']) +
-		', "seed": '
-		+ str(seed) +
-		', "type": "txt2img", "postprocessing": [{"type": "none"}], "sampler": "'
-		+ st['sampler'] +
-		'", "variations": []}}')
+
+	invokeai_md = {'model': 'stable diffusion',
+					'model_weights': st['model'],
+					'model_hash': '',
+					'app_id': 'diffusers_test.py',
+					'app_version': '0',
+					'image': {'prompt': 
+								[{'prompt': f"{invoke_prompt} [{invoke_neg}]",
+								'weight': 1.0}],
+						'steps': st['steps'],
+						'cfg_scale': st['cfg_scale'],
+						'threshold': 0.0,
+						'hires_fix': False,
+						'seamless': False,
+						'perlin': 0.0,
+						'width': st['width'],
+						'height': st['height'],
+						'seed': seed,
+						'type': 'txt2img',
+						'postprocessing': [{'type': 'none'}],
+						'sampler': st['sampler'],
+						'variations': []}}
+
+	md.add_text('sd-metadata', json.dumps(invokeai_md))					
 	image.save(f"{seed}.png", pnginfo=md)
 
 print(f"{image_n} files processed in {time.perf_counter() - start_time} seconds")
