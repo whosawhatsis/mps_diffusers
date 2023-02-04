@@ -37,11 +37,13 @@ import clip
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 from compel import Compel
+import time
 
 parser = argparse.ArgumentParser(description="AI image gen using diffusers on MPS")
 parser.add_argument('--profile', type=str, help="the profile from profiles.ini to load, omit for default")
 parser.add_argument('-p', metavar='"astronaut, mars"', type=str, help="positive prompt (in quotes)", required=True)
 parser.add_argument('-n', metavar='"goofy hands"', type=str, help="negative prompt (in quotes)")
+parser.add_argument('-c', type=int, help="number of images to produce (if omitted, will generate until you terminate with ^C)")
 args = parser.parse_args()
 
 conf = ConfigParser()
@@ -158,9 +160,12 @@ for i in range(max(len(neg_tokens) - 77, 0)):
 	print(greys[i % 2] + re.sub("</w>", " ", neg_tokens[i + 77]), end ="")
 print('\033[0m')
 
-while True: #keeps going until you stop it with ^c
+start_time = time.perf_counter()
+image_n = 0
+while((not args.c) or (image_n < args.c)):
+	image_n += 1
 	seed = random.randint(0, 4294967294)
-	print(f"generating with seed: " + '\033[92m' + f"{seed}" + '\033[0m' + f" at {st['width']}x{st['height']} ({st['width'] * st['height'] / 1000000}Mpx)")
+	print(f"generating image {image_n} of {args.c or '∞'} with seed: " + '\033[92m' + f"{seed}" + '\033[0m' + f" at {st['width']}x{st['height']} ({st['width'] * st['height'] / 1000000}Mpx)")
 	generator = torch.Generator("cpu").manual_seed(seed)
 	conditioning = compel.build_conditioning_tensor(f"{invoke_prompt}")
 	neg_conditioning = compel.build_conditioning_tensor(f"{invoke_neg}")
@@ -203,3 +208,5 @@ while True: #keeps going until you stop it with ^c
 		+ st['sampler'] +
 		'", "variations": []}}')
 	image.save(f"{seed}.png", pnginfo=md)
+
+print(f"{image_n} files processed in {time.perf_counter() - start_time} seconds")
