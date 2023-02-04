@@ -97,7 +97,7 @@ else:
 warnings.filterwarnings("ignore")
 print(f"warming up...")
 # First-time "warmup" pass
-_ = pipe("", num_inference_steps=1, height = 64, width = 64)
+_ = pipe("", num_inference_steps=1, height = 64, width = 128)
 warnings.filterwarnings("default")
 
 colors = [
