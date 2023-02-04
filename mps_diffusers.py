@@ -143,7 +143,7 @@ print('\033[0m')
 
 while True: #keeps going until you stop it with ^c
 	seed = random.randint(0, 4294967294)
-	print(f"generating with seed: " + '\033[92m' + f"{seed}" + '\033[0m')
+	print(f"generating with seed: " + '\033[92m' + f"{seed}" + '\033[0m' + f" at {width}x{height} ({width * height / 1000000}Mpx)")
 	generator = torch.Generator("cpu").manual_seed(seed)
 	conditioning = compel.build_conditioning_tensor(f"{invoke_prompt}")
 	neg_conditioning = compel.build_conditioning_tensor(f"{invoke_neg}")
