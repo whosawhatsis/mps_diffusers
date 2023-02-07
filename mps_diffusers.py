@@ -162,9 +162,6 @@ for i in range(max(len(neg_tokens) - 75, 0)):
 	print(greys[i % 2] + re.sub("</w>", " ", neg_tokens[i + 75]), end ="")
 print('\033[0m')
 
-print(compel.get_token_ids([f"{invoke_prompt}"]))
-exit
-
 start_time = time.perf_counter()
 image_n = 0
 while((not args.c) or (image_n < args.c)):
