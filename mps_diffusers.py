@@ -150,17 +150,20 @@ print(f"invoke-style prompt: " + '\033[96m' + f"{invoke_prompt}\n" + '\033[91m' 
 prompt_tokens = pipe.tokenizer.tokenize(unweight(prompt))
 neg_tokens = pipe.tokenizer.tokenize(unweight(neg))
 print(f"prompt tokens ({len(prompt_tokens)}): ", end ="")
-for i in range(min(len(prompt_tokens), 77)):
+for i in range(min(len(prompt_tokens), 75)):
 	print(colors[i % 5] + re.sub("</w>", " ", prompt_tokens[i]), end ="")
-for i in range(max(len(prompt_tokens) - 77, 0)):
-	print(greys[i % 2] + re.sub("</w>", " ", prompt_tokens[i + 77]), end ="")
+for i in range(max(len(prompt_tokens) - 75, 0)):
+	print(greys[i % 2] + re.sub("</w>", " ", prompt_tokens[i + 75]), end ="")
 
 print('\033[0m' + f"\nnegative prompt tokens ({len(neg_tokens)}): ", end ="")
-for i in range(min(len(neg_tokens), 77)):
+for i in range(min(len(neg_tokens), 75)):
 	print(colors[i % 5] + re.sub("</w>", " ", neg_tokens[i]), end ="")
-for i in range(max(len(neg_tokens) - 77, 0)):
-	print(greys[i % 2] + re.sub("</w>", " ", neg_tokens[i + 77]), end ="")
+for i in range(max(len(neg_tokens) - 75, 0)):
+	print(greys[i % 2] + re.sub("</w>", " ", neg_tokens[i + 75]), end ="")
 print('\033[0m')
+
+print(compel.get_token_ids([f"{invoke_prompt}"]))
+exit
 
 start_time = time.perf_counter()
 image_n = 0
