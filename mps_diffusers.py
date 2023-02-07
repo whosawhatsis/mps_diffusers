@@ -61,11 +61,11 @@ st = dict(conf[choice]) if choice else dict(conf['DEFAULT'])
 
 # this is a hack to cast to type without hardcoding getters
 for k,v in st.items():
-    if v[0].isdigit():
-        try:
-            st[k] = int(v)
-        except ValueError:
-            st[k] = float(v)
+	if v[0].isdigit():
+		try:
+			st[k] = int(v)
+		except ValueError:
+			st[k] = float(v)
 
 # this is because the above hack doesn't cover bools
 st['fp16'] = json.loads(st['fp16'].lower())
@@ -187,7 +187,6 @@ while((not args.c) or (image_n < args.c)):
 	md.add_text("Seed", str(seed))
 	md.add_text("Agent", f"diffusers_test.py")
 	md.add_text("agent", f"diffusers_test.py")
-
 	invokeai_md = {'model': 'stable diffusion',
 					'model_weights': st['model'],
 					'model_hash': '',
@@ -209,8 +208,7 @@ while((not args.c) or (image_n < args.c)):
 						'postprocessing': [{'type': 'none'}],
 						'sampler': st['sampler'],
 						'variations': []}}
-
-	md.add_text('sd-metadata', json.dumps(invokeai_md))					
+	md.add_text('sd-metadata', json.dumps(invokeai_md))
 	image.save(f"{seed}.png", pnginfo=md)
 
 print(f"{image_n} files processed in {time.perf_counter() - start_time} seconds")
